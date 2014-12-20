@@ -34,9 +34,8 @@ func getPassword(prompt string) (pass string, err error) {
 			buf = buf[:len(buf)-1]
 		} else if ch == '\x03' { // CLTR-C
 			return "", io.EOF
-		} else {
-			buf = append(buf, byte(int(ch)))
 		}
+		buf = append(buf, byte(int(ch)))
 	}
 
 	// Write CRLF
