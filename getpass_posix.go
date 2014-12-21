@@ -12,6 +12,7 @@ import "C"
 import (
 	"errors"
 	"io"
+	"os"
 	"unsafe"
 )
 
@@ -40,10 +41,8 @@ func getPassword(prompt string) (pass string, err error) {
 		C.tcsetattr(stdinFd, C.TCSANOW, &oldt)
 	}()
 
-	// Display prompt on standard output
-	cprompt := C.CString(prompt)
-	defer C.free(unsafe.Pointer(cprompt))
-	C.write(stdoutFd, unsafe.Pointer(cprompt), C.size_t(len(prompt)))
+	// Write prompt
+	os.Stdout.Write([]byte(prompt))
 
 	// Read password from standard input
 	var ch byte
@@ -63,7 +62,9 @@ func getPassword(prompt string) (pass string, err error) {
 		}
 		buf = append(buf, ch)
 	}
-	C.write(stdoutFd, unsafe.Pointer(&ch), 1)
+
+	// Write LF
+	os.Stdout.Write([]byte("\n"))
 
 	return string(buf), nil
 }
